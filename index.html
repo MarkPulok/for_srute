@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>The Stranger Test — A 30-Second Experiment for Srute ✨</title>
+  <meta name="description" content="A playful, funny, slightly mysterious 30-second interactive experiment for Srute.">
+  <meta name="theme-color" content="#24123D">
+  
+  <!-- Favicon (SVG Data URI) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✨</text></svg>">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Ambient Canvas Background -->
+  <canvas id="bg-canvas" aria-hidden="true"></canvas>
+  <canvas id="confetti-canvas" aria-hidden="true"></canvas>
+
+  <!-- Ambient Light Orbs -->
+  <div class="ambient-glow orb-1" aria-hidden="true"></div>
+  <div class="ambient-glow orb-2" aria-hidden="true"></div>
+  <div class="ambient-glow orb-3" aria-hidden="true"></div>
+
+  <!-- Header: Brand, Progress, Sound Controls -->
+  <header class="app-header">
+    <div class="header-left">
+      <div class="app-badge">
+        <span class="pulse-dot"></span>
+        <span class="badge-text">STRANGER TEST // FOR SRUTE ✨</span>
+      </div>
+    </div>
+
+    <!-- Progress Indicator -->
+    <div class="header-center">
+      <div class="progress-bar-container" role="progressbar" aria-valuemin="1" aria-valuemax="7" aria-valuenow="1" aria-label="Experiment Progress">
+        <div class="progress-step-dots">
+          <button class="step-dot active" data-step="1" title="Screen 1: Introduction">
+            <span class="dot-inner"></span>
+            <span class="dot-tooltip">Intro</span>
+          </button>
+          <div class="step-connector"></div>
+          <button class="step-dot" data-step="2" title="Screen 2: Mood Detector">
+            <span class="dot-inner"></span>
+            <span class="dot-tooltip">Mood</span>
+          </button>
+          <div class="step-connector"></div>
+          <button class="step-dot" data-step="3" title="Screen 3: Free Day Challenge">
+            <span class="dot-inner"></span>
+            <span class="dot-tooltip">Day</span>
+          </button>
+          <div class="step-connector"></div>
+          <button class="step-dot" data-step="4" title="Screen 4: Superpower Challenge">
+            <span class="dot-inner"></span>
+            <span class="dot-tooltip">Power</span>
+          </button>
+          <div class="step-connector"></div>
+          <button class="step-dot" data-step="5" title="Screen 5: Vibe Report">
+            <span class="dot-inner"></span>
+            <span class="dot-tooltip">Vibe</span>
+          </button>
+          <div class="step-connector"></div>
+          <button class="step-dot" data-step="6" title="Screen 6: The Message">
+            <span class="dot-inner"></span>
+            <span class="dot-tooltip">Letter</span>
+          </button>
+          <div class="step-connector"></div>
+          <button class="step-dot" data-step="7" title="Screen 7: Final Verdict">
+            <span class="dot-inner"></span>
+            <span class="dot-tooltip">Smile?</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sound Control Toggle -->
+    <div class="header-right">
+      <button id="sound-toggle-btn" class="icon-btn sound-btn" aria-label="Toggle Sound" title="Sound: ON (Click to mute)">
+        <span class="sound-wave-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="speaker-icon">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path class="sound-wave sound-wave-1" d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+            <path class="sound-wave sound-wave-2" d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+          </svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="speaker-mute-icon hidden">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <line x1="23" y1="9" x2="17" y2="15"></line>
+            <line x1="17" y1="9" x2="23" y2="15"></line>
+          </svg>
+        </span>
+        <span class="sound-label">SOUND</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Interactive Global Mascot ("Cosmo") Floating Anchor -->
+  <aside class="mascot-companion" id="mascot-companion" aria-label="Cosmo the Star Companion">
+    <div class="mascot-speech-bubble" id="mascot-bubble" aria-live="polite">
+      <span class="bubble-content">Hi Srute! ✨</span>
+    </div>
+    
+    <div class="mascot-wrapper" id="mascot-trigger" role="button" tabindex="0" title="Tap me for a cute reaction!" aria-label="Cosmo Mascot - click to poke">
+      <svg class="mascot-svg" id="mascot-svg" viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="starBodyGrad" cx="50%" cy="40%" r="55%">
+            <stop offset="0%" stop-color="#FFF5C2" />
+            <stop offset="45%" stop-color="#FFD166" />
+            <stop offset="90%" stop-color="#FF9E44" />
+          </radialGradient>
+          <radialGradient id="blushGrad" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#FF6B9D" stop-opacity="0.85" />
+            <stop offset="100%" stop-color="#FF6B9D" stop-opacity="0" />
+          </radialGradient>
+          <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="5" result="glow" />
+            <feComposite in="SourceGraphic" in2="glow" operator="over" />
+          </filter>
+        </defs>
+
+        <!-- Star Glow Aura -->
+        <circle class="mascot-aura" cx="70" cy="70" r="54" fill="#FFE27A" opacity="0.25" filter="url(#softGlow)" />
+
+        <!-- 5-Point Rounded Star Body -->
+        <path class="mascot-body" d="M70 12 
+                 C73 24 81 33 92 38 
+                 C105 44 116 46 126 55 
+                 C136 64 133 77 122 86 
+                 C113 93 108 103 109 115 
+                 C110 128 99 135 88 130 
+                 C77 125 67 126 56 131 
+                 C44 136 34 128 35 115 
+                 C36 103 31 93 22 86 
+                 C11 77 8 64 18 55 
+                 C28 46 39 44 52 38 
+                 C63 33 71 24 74 12 Z" 
+              fill="url(#starBodyGrad)" 
+              stroke="#FFF" stroke-width="2" />
+
+        <!-- Rosy Cheeks -->
+        <circle class="mascot-blush blush-left" cx="44" cy="78" r="8" fill="url(#blushGrad)" />
+        <circle class="mascot-blush blush-right" cx="96" cy="78" r="8" fill="url(#blushGrad)" />
+
+        <!-- Default Eyes (Open with sparkles) -->
+        <g class="mascot-eyes eyes-normal">
+          <ellipse class="eye eye-left" cx="51" cy="69" rx="5" ry="6.5" fill="#24123D" />
+          <circle class="eye-shine shine-left-1" cx="49" cy="67" r="2.2" fill="#FFFFFF" />
+          <circle class="eye-shine shine-left-2" cx="53" cy="71" r="1.1" fill="#FFFFFF" />
+
+          <ellipse class="eye eye-right" cx="89" cy="69" rx="5" ry="6.5" fill="#24123D" />
+          <circle class="eye-shine shine-right-1" cx="87" cy="67" r="2.2" fill="#FFFFFF" />
+          <circle class="eye-shine shine-right-2" cx="91" cy="71" r="1.1" fill="#FFFFFF" />
+        </g>
+
+        <!-- Happy Curved Eyes (Hidden by default) -->
+        <g class="mascot-eyes eyes-happy hidden">
+          <path d="M45 70 Q51 63 57 70" stroke="#24123D" stroke-width="3" stroke-linecap="round" fill="none" />
+          <path d="M83 70 Q89 63 95 70" stroke="#24123D" stroke-width="3" stroke-linecap="round" fill="none" />
+        </g>
+
+        <!-- Sleepy / Chill Eyes -->
+        <g class="mascot-eyes eyes-sleepy hidden">
+          <line x1="45" y1="71" x2="57" y2="71" stroke="#24123D" stroke-width="3" stroke-linecap="round" />
+          <line x1="83" y1="71" x2="95" y2="71" stroke="#24123D" stroke-width="3" stroke-linecap="round" />
+        </g>
+
+        <!-- Wink Eyes -->
+        <g class="mascot-eyes eyes-wink hidden">
+          <ellipse cx="51" cy="69" rx="5" ry="6.5" fill="#24123D" />
+          <circle cx="49" cy="67" r="2.2" fill="#FFFFFF" />
+          <path d="M83 70 Q89 63 95 70" stroke="#24123D" stroke-width="3" stroke-linecap="round" fill="none" />
+        </g>
+
+        <!-- Mouth States -->
+        <g class="mascot-mouth mouth-smile">
+          <path d="M63 76 Q70 85 77 76" stroke="#24123D" stroke-width="2.6" stroke-linecap="round" fill="none" />
+        </g>
+        <g class="mascot-mouth mouth-open hidden">
+          <path d="M62 76 Q70 89 78 76 Z" fill="#991B3A" stroke="#24123D" stroke-width="2" />
+          <path d="M66 84 Q70 81 74 84 Z" fill="#FF8CA3" />
+        </g>
+        <g class="mascot-mouth mouth-ooh hidden">
+          <ellipse cx="70" cy="78" rx="3.5" ry="4.5" fill="#24123D" />
+        </g>
+
+        <!-- Cool Sunglasses Accessory (Hidden by default) -->
+        <g class="mascot-accessory accessory-shades hidden">
+          <path d="M40 64 L62 65 C63 73 57 78 48 78 C42 78 39 73 40 64 Z" fill="#1A1128" stroke="#33224B" stroke-width="1.5" />
+          <path d="M78 65 L100 64 C101 73 98 78 92 78 C83 78 77 73 78 65 Z" fill="#1A1128" stroke="#33224B" stroke-width="1.5" />
+          <line x1="62" y1="67" x2="78" y2="67" stroke="#33224B" stroke-width="2.5" />
+          <line x1="43" y1="68" x2="57" y2="74" stroke="#FFF" stroke-width="1" stroke-linecap="round" opacity="0.6" />
+          <line x1="81" y1="68" x2="95" y2="74" stroke="#FFF" stroke-width="1" stroke-linecap="round" opacity="0.6" />
+        </g>
+
+        <!-- Party Hat Accessory (Hidden by default) -->
+        <g class="mascot-accessory accessory-party-hat hidden">
+          <polygon points="70,18 57,-4 83,-4" fill="#FF5E89" stroke="#FFF" stroke-width="1" />
+          <circle cx="70" cy="-6" r="4" fill="#FFDF73" />
+          <line x1="60" y1="1" x2="80" y2="1" stroke="#FFF" stroke-width="2" />
+        </g>
+
+        <!-- Floating Sparkle Particles around Mascot -->
+        <g class="mascot-sparkles">
+          <circle class="sparkle sp-1" cx="112" cy="32" r="2.5" fill="#FFF" />
+          <circle class="sparkle sp-2" cx="24" cy="40" r="1.8" fill="#FFF" />
+          <circle class="sparkle sp-3" cx="120" cy="98" r="2" fill="#FFB8D2" />
+        </g>
+      </svg>
+    </div>
+  </aside>
+
+  <!-- Main Viewport / Screen Experience Container -->
+  <main class="experience-viewport" id="app-viewport">
+    
+    <!-- ======================================================== -->
+    <!-- SCREEN 1: THE MYSTERIOUS INTRODUCTION                     -->
+    <!-- ======================================================== -->
+    <section class="screen-card screen-active" id="screen-1" data-screen="1" aria-labelledby="screen-1-title">
+      <div class="screen-content">
+        
+        <div class="pill-badge" id="s1-badge">
+          <span class="pill-icon">✨</span>
+          <span class="pill-text">AN UNOFFICIAL EXPERIMENT</span>
+        </div>
+
+        <h1 class="main-title gradient-text" id="screen-1-title">
+          Hello,Srute! <span class="emoji-bounce">👀</span>
+        </h1>
+
+        <div class="lead-paragraphs">
+          <p class="lead-intro">You weren't expecting this, were you?</p>
+          <p class="lead-sub">
+            Someone created a tiny experiment just for you. It will take approximately <strong class="highlight-timer">30 seconds</strong>.
+          </p>
+          <p class="lead-prompt">Curious?</p>
+        </div>
+
+        <div class="action-zone">
+          <button id="btn-start" class="btn-primary" type="button">
+            <span class="btn-glow"></span>
+            <span class="btn-label">LET'S FIND OUT ✨</span>
+            <span class="btn-arrow" aria-hidden="true">→</span>
+          </button>
+          
+          <p class="microcopy">
+            <svg class="micro-lock-icon" viewBox="0 0 16 16" fill="currentColor" width="13" height="13">
+              <path d="M8 1a3.5 3.5 0 0 0-3.5 3.5V6H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-.5V4.5A3.5 3.5 0 0 0 8 1zm2 5H6V4.5a2 2 0 1 1 4 0V6z"/>
+            </svg>
+            No personal information. No difficult questions. Just a little fun.
+          </p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- SCREEN 2: THE MOOD DETECTOR                               -->
+    <!-- ======================================================== -->
+    <section class="screen-card screen-hidden" id="screen-2" data-screen="2" aria-labelledby="screen-2-title">
+      <div class="screen-content">
+        
+        <div class="pill-badge">
+          <span class="pill-icon">🧠</span>
+          <span class="pill-text">STEP 1 OF 3 // MOOD CALIBRATION</span>
+        </div>
+
+        <div class="screen-header-text">
+          <span class="sub-label">First things first...</span>
+          <h2 class="section-title" id="screen-2-title">What's your current mood?</h2>
+        </div>
+
+        <!-- 4 Interactive Answer Cards -->
+        <div class="options-grid mood-grid" role="radiogroup" aria-label="Current Mood Selection">
+          
+          <button class="option-card" type="button" role="radio" aria-checked="false" data-mood="fabulous">
+            <div class="option-inner">
+              <span class="option-key">A</span>
+              <span class="option-emoji">😎</span>
+              <span class="option-text">Absolutely fabulous</span>
+            </div>
+            <div class="option-indicator" aria-hidden="true"></div>
+          </button>
+
+          <button class="option-card" type="button" role="radio" aria-checked="false" data-mood="sleep">
+            <div class="option-inner">
+              <span class="option-key">B</span>
+              <span class="option-emoji">😴</span>
+              <span class="option-text">Need more sleep</span>
+            </div>
+            <div class="option-indicator" aria-hidden="true"></div>
+          </button>
+
+          <button class="option-card" type="button" role="radio" aria-checked="false" data-mood="annoy">
+            <div class="option-inner">
+              <span class="option-key">C</span>
+              <span class="option-emoji">😒</span>
+              <span class="option-text">Don't annoy me</span>
+            </div>
+            <div class="option-indicator" aria-hidden="true"></div>
+          </button>
+
+          <button class="option-card" type="button" role="radio" aria-checked="false" data-mood="entertainment">
+            <div class="option-inner">
+              <span class="option-key">D</span>
+              <span class="option-emoji">😂</span>
+              <span class="option-text">Here for the entertainment</span>
+            </div>
+            <div class="option-indicator" aria-hidden="true"></div>
+          </button>
+
+        </div>
+
+        <!-- Dynamic Feedback Box -->
+        <div class="reaction-box hidden" id="mood-reaction-box" aria-live="polite">
+          <div class="reaction-avatar" aria-hidden="true">🤖</div>
+          <div class="reaction-content">
+            <span class="reaction-status">DIAGNOSIS</span>
+            <p class="reaction-text" id="mood-reaction-text"></p>
+          </div>
+        </div>
+
+        <!-- Navigation Button -->
+        <div class="action-zone">
+          <button id="btn-next-mood" class="btn-primary btn-next hidden" type="button">
+            <span class="btn-label">NEXT QUESTION</span>
+            <span class="btn-arrow" aria-hidden="true">→</span>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- SCREEN 3: QUESTION 1 — THE FREE DAY CHALLENGE             -->
+    <!-- ======================================================== -->
+    <section class="screen-card screen-hidden" id="screen-3" data-screen="3" aria-labelledby="screen-3-title">
+      <div class="screen-content">
+        
+        <div class="pill-badge pill-curiosity">
+          <span class="pill-icon">✨</span>
+          <span class="pill-text">CHALLENGE 1 OF 2 // FREE DAY</span>
+        </div>
+
+        <div class="screen-header-text">
+          <span class="sub-label">Let's see what kind of person you are...</span>
+          <h2 class="section-title" id="screen-3-title">You unexpectedly get a completely free day. What's your move?</h2>
+        </div>
+
+        <!-- 4 Illustrated Cards -->
+        <div class="options-grid challenge-grid" role="radiogroup" aria-label="Free day move selection">
+          
+          <button class="option-card card-illustrated" type="button" role="radio" aria-checked="false" data-freeday="explorer">
+            <div class="option-inner">
+              <span class="option-key">A</span>
+              <div class="option-visual-box">
+                <span class="option-emoji">🌍</span>
+              </div>
+              <div class="option-text-group">
+                <span class="option-title">THE EXPLORER</span>
+                <span class="option-sub">Going somewhere I've never been.</span>
+              </div>
+            </div>
+            <div class="option-indicator" aria-hidden="true"></div>
+          </button>
+
+          <button class="option-card card-illustrated" type="button" role="radio" aria-checked="false" data-freeday="comfort">
+            <div class="option-inner">
+              <span class="option-key">B</span>
+              <div class="option-visual-box">
+                <span class="option-emoji">🍿</span>
+              </div>
+              <div class="option-text-group">
+                <span class="option-title">THE COMFORT SEEKER</span>
+                <span class="option-sub">Snacks, movies, bed. Perfect day.</span>
+              </div>
+            </div>
+            <div class="option-indicator" aria-hidden="true"></div>
+          </button>
+
+          <button class="option-card card-illustrated" type="button" role="radio" aria-checked="false" data-freeday="spontaneous">
+            <div class="option-inner">
+              <span class="option-key">C</span>
+              <div class="option-visual-box">
+                <span class="option-emoji">🎉</span>
+              </div>
+              <div class="option-text-group">
+                <span class="option-title">THE SPONTANEOUS ONE</span>
+                <span class="option-sub">Whatever happens, happens!</span>
+              </div>
+            </div>
+            <div class="option-indicator" aria-hidden="true"></div>
+          </button>
+
+          <button class="option-card card-illustrated" type="button" role="radio" aria-checked="false" data-freeday="planner">
+            <div class="option-inner">
+              <span class="option-key">D</span>
+              <div class="option-visual-box">
+                <span class="option-emoji">🧠</span>
+              </div>
+              <div class="option-text-group">
+                <span class="option-title">THE MASTER PLANNER</span>
+                <span class="option-sub">First, I'll make a plan for the day.</span>
+              </div>
+            </div>
+            <div class="option-indicator" aria-hidden="true"></div>
+          </button>
+
+        </div>
+
+        <!-- Dynamic Reaction Box -->
+        <div class="reaction-box hidden" id="freeday-reaction-box" aria-live="polite">
+          <div class="reaction-avatar" aria-hidden="true">🧭</div>
+          <div class="reaction-content">
+            <span class="reaction-status">DIAGNOSIS</span>
+            <p class="reaction-text" id="freeday-reaction-text"></p>
+          </div>
+        </div>
+
+        <!-- Navigation Button -->
+        <div class="action-zone">
+          <button id="btn-next-freeday" class="btn-primary btn-next hidden" type="button">
+            <span class="btn-label">NEXT CHALLENGE</span>
+            <span class="btn-arrow" aria-hidden="true">→</span>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- SCREEN 4: QUESTION 2 — THE SUPERPOWER CHALLENGE           -->
+    <!-- ======================================================== -->
+    <section class="screen-card screen-hidden" id="screen-4" data-screen="4" aria-labelledby="screen-4-title">
+      <div class="screen-content">
+        
+        <div class="pill-badge pill-superpower">
+          <span class="pill-icon">⚡</span>
+          <span class="pill-text">CHALLENGE 2 OF 2 // SUPERPOWER</span>
+        </div>
+
+        <div class="screen-header-text">
+          <span class="sub-label">Okay, now things get interesting...</span>
+          <h2 class="section-title" id="screen-4-title">If you could have ONE superpower, what would you choose?</h2>
+        </div>
+
+        <!-- 4 Superpower Cards -->
+        <div class="options-grid power-grid" role="radiogroup" aria-label="Superpower selection">
+          
+          <button class="option-card card-power" type="button" role="radio" aria-checked="false" data-power="minds">
+            <div class="option-inner">
+              <span class="option-key">A</span>
+              <div class="option-visual-box power-visual-minds">
+                <span class="option-emoji">🧠</span>
+              </div>
+              <div class="option-text-group">
+                <span class="option-title">READ MINDS</span>
+                <span class="option-sub">Know what everyone is thinking.</span>
+              </div>
+            </div>
+            <div class="option-indicator" aria-hidden="true"></div>
+          </button>
+
+          <button class="option-card card-power" type="button" role="radio" aria-checked="false" data-power="time">
+            <div class="option-inner">
+              <span class="option-key">B</span>
+              <div class="option-visual-box power-visual-time">
+                <span class="option-emoji">⏳</span>
+              </div>
+              <div class="option-text-group">
+                <span class="option-title">STOP TIME</span>
+                <span class="option-sub">Freeze the world whenever I want.</span>
+              </div>
+            </div>
+            <div class="option-indicator" aria-hidden="true"></div>
+          </button>
+
+          <button class="option-card card-power" type="button" role="radio" aria-checked="false" data-power="teleport">
+            <div class="option-inner">
+              <span class="option-key">C</span>
+              <div class="option-visual-box power-visual-teleport">
+                <span class="option-emoji">✨</span>
+              </div>
+              <div class="option-text-group">
+                <span class="option-title">TELEPORTATION</span>
+                <span class="option-sub">Travel anywhere in a second.</span>
+              </div>
+            </div>
+            <div class="option-indicator" aria-hidden="true"></div>
+          </button>
+
+          <button class="option-card card-power" type="button" role="radio" aria-checked="false" data-power="future">
+            <div class="option-inner">
+              <span class="option-key">D</span>
+              <div class="option-visual-box power-visual-future">
+                <span class="option-emoji">🔮</span>
+              </div>
+              <div class="option-text-group">
+                <span class="option-title">SEE THE FUTURE</span>
+                <span class="option-sub">Know what's coming next.</span>
+              </div>
+            </div>
+            <div class="option-indicator" aria-hidden="true"></div>
+          </button>
+
+        </div>
+
+        <!-- Dynamic Reaction Box -->
+        <div class="reaction-box hidden" id="power-reaction-box" aria-live="polite">
+          <div class="reaction-avatar" aria-hidden="true">⚡</div>
+          <div class="reaction-content">
+            <span class="reaction-status">ANALYSIS</span>
+            <p class="reaction-text" id="power-reaction-text"></p>
+          </div>
+        </div>
+
+        <!-- Navigation Button -->
+        <div class="action-zone">
+          <button id="btn-next-power" class="btn-primary btn-next hidden" type="button">
+            <span class="btn-label">CALCULATE MY VIBE ✨</span>
+            <span class="btn-arrow" aria-hidden="true">→</span>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- SCREEN 5: PERSONALITY RESULT — YOUR OFFICIAL VIBE REPORT  -->
+    <!-- ======================================================== -->
+    <section class="screen-card screen-hidden" id="screen-5" data-screen="5" aria-labelledby="screen-5-title">
+      <div class="screen-content vibe-screen-content">
+        
+        <div class="pill-badge pill-vibe">
+          <span class="pill-icon">🔮</span>
+          <span class="pill-text">COSMIC ALIGNMENT CONFIRMED</span>
+        </div>
+
+        <div class="screen-header-text">
+          <h2 class="section-title gradient-text" id="screen-5-title">YOUR OFFICIAL VIBE REPORT</h2>
+        </div>
+
+        <!-- Animated Vibe Report Card -->
+        <div class="vibe-report-card" id="vibe-report-card">
+          
+          <div class="vibe-header-block">
+            <div class="vibe-badge" id="vibe-profile-badge">PERSONALITY MATRIX</div>
+            <h3 class="vibe-title" id="vibe-profile-title">The Cosmic Nomad 🌍</h3>
+            <p class="vibe-desc" id="vibe-profile-desc">
+              Curious, energetic, and completely unbothered by ordinary rules.
+            </p>
+          </div>
+
+          <!-- 4 Animated Metric Rows -->
+          <div class="vibe-metrics-group">
+            
+            <div class="vibe-metric-row">
+              <div class="metric-info">
+                <span class="metric-label">🧗‍♀️ Adventure Level</span>
+                <span class="metric-val" id="val-adventure">0%</span>
+              </div>
+              <div class="metric-track">
+                <div class="metric-fill fill-adventure" id="fill-adventure" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <div class="vibe-metric-row">
+              <div class="metric-info">
+                <span class="metric-label">🔍 Curiosity Level</span>
+                <span class="metric-val" id="val-curiosity">0%</span>
+              </div>
+              <div class="metric-track">
+                <div class="metric-fill fill-curiosity" id="fill-curiosity" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <div class="vibe-metric-row">
+              <div class="metric-info">
+                <span class="metric-label">🛋️ Relaxation Level</span>
+                <span class="metric-val" id="val-relaxation">0%</span>
+              </div>
+              <div class="metric-track">
+                <div class="metric-fill fill-relaxation" id="fill-relaxation" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <div class="vibe-metric-row">
+              <div class="metric-info">
+                <span class="metric-label">🔮 Mystery Level</span>
+                <span class="metric-val" id="val-mystery">0%</span>
+              </div>
+              <div class="metric-track">
+                <div class="metric-fill fill-mystery" id="fill-mystery" style="width: 0%"></div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Required Microcopy -->
+          <p class="vibe-disclaimer">
+            Officially unofficial. Scientifically questionable. Emotionally accurate. 😂
+          </p>
+
+        </div>
+
+        <!-- Action to proceed to Envelope -->
+        <div class="action-zone">
+          <button id="btn-vibe-continue" class="btn-primary btn-next" type="button">
+            <span class="btn-label">Okay, what's next? ✨</span>
+            <span class="btn-arrow" aria-hidden="true">→</span>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- SCREEN 5 QUESTION: WHAT MAKES SOMEONE MEMORABLE?         -->
+    <!-- ======================================================== -->
+    <section class="screen-card screen-hidden" id="screen-5-question" data-screen="5-question" aria-labelledby="memorable-question-title">
+      <div class="screen-content">
+        <div class="pill-badge pill-curiosity">
+          <span class="pill-icon">💭</span>
+          <span class="pill-text">ONE QUICK QUESTION</span>
+        </div>
+
+        <div class="screen-header-text">
+          <h2 class="section-title" id="memorable-question-title">What makes someone memorable?</h2>
+        </div>
+
+        <div class="options-grid memorable-options" role="radiogroup" aria-label="What makes someone memorable?">
+          <button class="option-card" type="button" role="radio" aria-checked="false" data-memorable="talkative">
+            <div class="option-inner"><span class="option-key">A</span><span class="option-emoji" aria-hidden="true">🗣️</span><span class="option-text">Someone who talks a lot.</span></div>
+            <div class="option-indicator" aria-hidden="true"></div>
+          </button>
+          <button class="option-card" type="button" role="radio" aria-checked="false" data-memorable="laugh">
+            <div class="option-inner"><span class="option-key">B</span><span class="option-emoji" aria-hidden="true">😂</span><span class="option-text">Someone who makes you laugh.</span></div>
+            <div class="option-indicator" aria-hidden="true"></div>
+          </button>
+          <button class="option-card" type="button" role="radio" aria-checked="false" data-memorable="details">
+            <div class="option-inner"><span class="option-key">C</span><span class="option-emoji" aria-hidden="true">🧠</span><span class="option-text">Someone who remembers little things.</span></div>
+            <div class="option-indicator" aria-hidden="true"></div>
+          </button>
+          <button class="option-card" type="button" role="radio" aria-checked="false" data-memorable="website">
+            <div class="option-inner"><span class="option-key">D</span><span class="option-emoji" aria-hidden="true">😂</span><span class="option-text">Someone who builds an entire website only for you. 😂</span></div>
+            <div class="option-indicator" aria-hidden="true"></div>
+          </button>
+        </div>
+
+        <div class="action-zone">
+          <button id="btn-memorable-continue" class="btn-primary btn-next hidden" type="button">
+            <span class="btn-label">Okay, what's next? ✨</span>
+            <span class="btn-arrow" aria-hidden="true">→</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- SCREEN 6: THE ACTUAL REASON (ENVELOPE & LETTER)           -->
+    <!-- ======================================================== -->
+    <section class="screen-card screen-hidden" id="screen-6" data-screen="6" aria-labelledby="screen-6-title">
+      <div class="screen-content screen-envelope-content">
+        
+        <div class="pill-badge pill-letter">
+          <span class="pill-icon">💌</span>
+          <span class="pill-text">SPECIAL DELIVERY</span>
+        </div>
+
+        <div class="screen-header-text">
+          <h2 class="section-title" id="screen-6-title">Well... there's a little message for you.</h2>
+          <p class="instruction-label" id="envelope-instruction">Tap the envelope to open it.</p>
+        </div>
+
+        <!-- Envelope 3D Stage -->
+        <div class="envelope-stage" id="envelope-stage">
+          
+          <div class="envelope-wrapper" id="envelope-interactive" role="button" tabindex="0" aria-label="Envelope containing your message. Tap to open.">
+            
+            <!-- Envelope Body -->
+            <div class="envelope">
+              <!-- Back wall -->
+              <div class="envelope-back"></div>
+
+              <!-- The Letter tucked inside -->
+              <div class="letter-sheet" id="letter-sheet">
+                <div class="letter-inner">
+                  <div class="letter-header-decor">
+                    <span class="letter-stamp">SPECIALLY FOR SRUTE ✨</span>
+                  </div>
+                  <div class="letter-body-text">
+                    <p>Some people have a beauty that doesn't need attention; it simply stays in your mind.</p>
+                    <p>Your smile has a little magic of its own, and your long, open hair makes you look almost unreal.</p>
+                    <p>There's something special about the way you carry yourself.</p>
+                    <p>I hope you never stop smiling, because it genuinely makes the world look a little prettier.</p>
+  
+                    <p>Anyway, I'm just a stranger trying to become a slightly less-strange stranger.</p>
+                     <p>Stay exactly as lovely as you are, Srute. 🌷</p>
+                    <p class="letter-closing">Have a lovely day! 😊</p>
+                  </div>
+                  <div class="letter-signature-block">
+                    <span class="letter-signature">— The guy behind this little experiment</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Front Fold Layers -->
+              <div class="envelope-pocket-left"></div>
+              <div class="envelope-pocket-right"></div>
+              <div class="envelope-pocket-bottom"></div>
+
+              <!-- Envelope Flap (Rotates open) -->
+              <div class="envelope-flap" id="envelope-flap">
+                <div class="wax-seal" id="wax-seal" title="Tap to break seal">
+                  <span class="seal-icon">✦</span>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Tap Hint Pulse -->
+            <div class="envelope-tap-hint" id="envelope-hint">
+              <span class="hand-icon">👆</span>
+              <span>Tap to Open</span>
+            </div>
+
+          </div>
+
+        </div>
+
+        <!-- Action button below envelope -->
+        <div class="action-zone envelope-action-zone">
+          <button id="btn-next-envelope" class="btn-primary btn-next hidden" type="button">
+            <span class="btn-label">ONE LAST THING</span>
+            <span class="btn-arrow" aria-hidden="true">→</span>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ======================================================== -->
+    <!-- SCREEN 7: THE FINAL EXPERIMENT (VERDICT & CELEBRATION)    -->
+    <!-- ======================================================== -->
+    <section class="screen-card screen-hidden" id="screen-7" data-screen="7" aria-labelledby="screen-7-title">
+      <div class="screen-content final-screen-content">
+        
+        <div class="pill-badge pill-final">
+          <span class="pill-icon">🎯</span>
+          <span class="pill-text">FINAL VERDICT</span>
+        </div>
+
+        <div class="screen-header-text">
+          <span class="sub-label">Mission almost complete!</span>
+          <h2 class="section-title" id="screen-7-title">Be honest... did this little experiment make you smile?</h2>
+        </div>
+
+        <!-- 3 Final Answer Cards -->
+        <div class="final-options-group" role="radiogroup" aria-label="Did this little experiment make you smile?">
+          
+          <button class="option-card final-card" type="button" role="radio" aria-checked="false" data-final="smile">
+            <div class="final-card-icon">😂</div>
+            <div class="final-card-label">Yes, a little!</div>
+            <div class="option-indicator" aria-hidden="true"></div>
+          </button>
+
+          <button class="option-card final-card" type="button" role="radio" aria-checked="false" data-final="notbad">
+            <div class="final-card-icon">🙂</div>
+            <div class="final-card-label">Not bad!</div>
+            <div class="option-indicator" aria-hidden="true"></div>
+          </button>
+
+          <button class="option-card final-card" type="button" role="radio" aria-checked="false" data-final="weird">
+            <div class="final-card-icon">🤨</div>
+            <div class="final-card-label">You're weird!</div>
+            <div class="option-indicator" aria-hidden="true"></div>
+          </button>
+
+        </div>
+
+        <!-- Final Response Outcome Box -->
+        <div class="final-outcome-box hidden" id="final-outcome-box" aria-live="polite">
+          <div class="outcome-icon" id="outcome-icon">🎉</div>
+          <div class="outcome-verdict-title" id="outcome-verdict-title">VERDICT CONFIRMED</div>
+          <p class="outcome-message" id="outcome-message-text"></p>
+          
+          <div class="outcome-divider"></div>
+          
+          <div class="warm-closing-message">
+            <p>Thanks for giving this little experiment a chance,Srute .</p>
+            <p class="closing-glow">Hope the rest of your day is wonderful! ✨</p>
+          </div>
+        </div>
+
+        <div class="creator-share-zone" id="creator-share-zone" aria-label="Anonymous response notice">
+          <p class="share-disclaimer">Your answers are shared anonymously with the creator when you finish. No names or contact details are collected.</p>
+          <p class="share-status-pill hidden" id="share-status" role="status" aria-live="polite"></p>
+          <button id="btn-share-retry" class="btn-share hidden" type="button">Retry sending</button>
+        </div>
+
+        <!-- Restart / Loop Back Option -->
+        <div class="action-zone final-action-zone">
+          <button id="btn-restart" class="btn-secondary" type="button" title="Start the 30-second experiment over">
+            <span class="restart-icon">↻</span>
+            <span class="restart-label">Experience again</span>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Ambient Sound Enable Welcome Toast for 1st click on Safari/iOS/Android -->
+  <div class="audio-prompt-pill hidden" id="audio-prompt" aria-hidden="true">
+    <span>🔊 Tap anywhere for sound</span>
+  </div>
+
+  <!-- Footer Micro Note -->
+  <footer class="app-footer">
+    <p class="footer-text">
+      Handcrafted with curiosity for Srute &bull; Completely private &bull; Zero cookies or tracking
+    </p>
+  </footer>
+
+  <!-- ======================================================== -->
+  <!-- PLAYFUL ALERT POPUP: "YOU CANNOT SELECT THIS"             -->
+  <!-- ======================================================== -->
+  <div class="custom-alert-modal hidden" id="annoy-modal" role="dialog" aria-modal="true" aria-labelledby="annoy-modal-title">
+    <div class="custom-alert-backdrop" id="annoy-backdrop"></div>
+    <div class="custom-alert-card">
+      <button class="modal-close-btn" id="btn-annoy-close" aria-label="Close dialog" type="button">✕</button>
+      <div class="alert-icon-ring">
+        <span class="alert-icon">🚫</span>
+      </div>
+      <div class="alert-badge">RESTRICTED OPTION</div>
+      <h3 class="alert-title" id="annoy-modal-title">You cannot select this! 😂</h3>
+      <p class="alert-description">
+        Nice try, Srute! That option is strictly off-limits.
+        Being annoyed is not permitted during a 30-second experiment!
+        Please pick a mood that allows some fun. ✨
+      </p>
+      <div class="alert-action-zone">
+        <button id="btn-annoy-dismiss" class="btn-primary btn-alert" type="button">
+          <span class="btn-label">Okay, fine 🙄</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- EXPANDED LETTER MODAL VIEW (FIXED & CENTERED)             -->
+  <!-- ======================================================== -->
+  <div class="letter-modal hidden" id="letter-modal" role="dialog" aria-modal="true" aria-labelledby="modal-letter-title">
+    <div class="letter-modal-backdrop" id="modal-backdrop"></div>
+    <div class="letter-modal-card">
+      
+      <div class="letter-paper">
+        <button class="letter-close-btn" id="btn-letter-close" aria-label="Close letter view" type="button">✕</button>
+        <div class="paper-texture-overlay" aria-hidden="true"></div>
+        
+        <div class="letter-header-row">
+          <div class="letter-badge-tiny">A LITTLE NOTE</div>
+          <span class="letter-date-stamp" id="modal-letter-title">SPECIALLY FOR SRUTE ✨</span>
+        </div>
+
+        <div class="letter-full-text">
+          <p>Some people have a beauty that doesn't need attention; it simply stays in your mind.</p>
+          <p>Your smile has a little magic of its own, and your long, open hair makes you look almost unreal.</p>
+          <p>There's something special about the way you carry yourself.</p>
+          <p>I hope you never stop smiling, because it genuinely makes the world look a little prettier.</p>
+          <p>Anyway, I'm just a stranger trying to become a slightly less-strange stranger.</p>
+          <p>Stay exactly as lovely as you are, Srute. 🌷</p>
+          <p class="letter-wishes">Have a lovely day! 😊</p>
+        </div>
+
+        <div class="letter-signature-footer">
+          <div class="handwritten-sign">— The guy behind this little experiment</div>
+        </div>
+
+      </div>
+
+      <div class="letter-modal-action">
+        <button id="btn-letter-continue" class="btn-primary" type="button">
+          <span class="btn-label">ONE LAST THING</span>
+          <span class="btn-arrow" aria-hidden="true">→</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
